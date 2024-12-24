@@ -22,4 +22,4 @@ jobs:
       # Run the external PowerShell script
       - name: Run External PowerShell Script
         shell: powershell
-        run: ./PowerShell/test.ps1
+        run: ./PowerShell/SimpleScript.ps1
