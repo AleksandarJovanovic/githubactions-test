@@ -9,17 +9,17 @@ jobs:
   run-powershell-script:
     runs-on: self-hosted
     steps:
-      # Check out the repository code
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      # Allow PowerShell scripts to run
+      - name: Allow PowerShell Scripts
+        shell: powershell
+        run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
-      # Run a simple PowerShell command
+      # Run an inline PowerShell command
       - name: Run PowerShell Inline
         shell: powershell
-        run: |
-          Write-Output "Running an inline PowerShell command on self-hosted runner"
+        run: Write-Output "Running an inline PowerShell command on self-hosted runner"
 
-      # Run the external PowerShell script
+      # Run an external PowerShell script
       - name: Run External PowerShell Script
         shell: powershell
-        run: ./PowerShell/SimpleScript.ps1
+        run: ./test.ps1
