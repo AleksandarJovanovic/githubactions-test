@@ -19,7 +19,7 @@ jobs:
         shell: powershell
         run: Write-Output "Running an inline PowerShell command on self-hosted runner"
 
-      # Run an external PowerShell script
-      - name: Run External PowerShell Script
-        shell: powershell
-        run: ./test.ps1
+#      # Run an external PowerShell script
+#      - name: Run External PowerShell Script
+#        shell: powershell
+#        run: ./test.ps1
