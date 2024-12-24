@@ -20,3 +20,8 @@ jobs:
     - name: Run External PowerShell Script
       shell: powershell
       run: ./PowerShell/SimpleScript.ps1
+
+    # Run an external PowerShell script
+    - name: Run External PowerShell Script
+      shell: powershell
+      run: ./PowerShell/SimpleScript2.ps1      
