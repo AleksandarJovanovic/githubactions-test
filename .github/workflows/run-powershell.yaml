@@ -9,19 +9,15 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-    - name: Set PowerShell execution policy
-      run: Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-      shell: powershell
-    - name: Run PowerShell Inline
-      run: Write-Output "Running an inline PowerShell command on self-hosted runner"
-      shell: powershell
-
-    # Run an external PowerShell script
-    - name: Run External PowerShell Script
-      shell: powershell
-      run: ./PowerShell/SimpleScript.ps1
-
-    # Run an external PowerShell script2
-    - name: Run External PowerShell Script2
-      shell: powershell
-      run: ./PowerShell/SimpleScript2.ps1      
+      - name: Set PowerShell execution policy
+        run: Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+        shell: powershell
+      - name: Run PowerShell Inline
+        run: Write-Output "Running an inline PowerShell command on self-hosted runner"
+        shell: powershell
+      - name: Run External PowerShell Script
+        shell: powershell
+        run: ./PowerShell/SimpleScript.ps1
+      - name: Run External PowerShell Script2
+        shell: powershell
+        run: ./PowerShell/SimpleScript2.ps1
