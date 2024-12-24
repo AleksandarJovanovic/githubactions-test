@@ -9,15 +9,16 @@ jobs:
   run-powershell-script:
     runs-on: self-hosted
     steps:
-      # Allow PowerShell scripts to run
-      - name: Allow PowerShell Scripts
-        shell: powershell
-        run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+#      # Allow PowerShell scripts to run
+#      - name: Allow PowerShell Scripts
+#        shell: powershell
+#        run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
       # Run an inline PowerShell command
       - name: Run PowerShell Inline
-        shell: powershell
+        shell: pwsh {0}; Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force; {1}
         run: Write-Output "Running an inline PowerShell command on self-hosted runner"
+
 
 #      # Run an external PowerShell script
 #      - name: Run External PowerShell Script
