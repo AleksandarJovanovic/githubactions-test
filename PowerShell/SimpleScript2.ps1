@@ -1,1 +1,1 @@
-Write-Output "^^^^ This is a test script running on a self-hosted runner."
+Write-Output "---> This is output from SimpleScript2.ps1."
