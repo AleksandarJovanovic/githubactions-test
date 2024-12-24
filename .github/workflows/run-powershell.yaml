@@ -9,6 +9,8 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
+      - name: Set safe directory
+        run: git config --global --add safe.directory C:/actions-runner/_work/githubactions-test/githubactions-test
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set PowerShell execution policy
