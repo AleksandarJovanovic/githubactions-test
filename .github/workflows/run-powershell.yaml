@@ -11,10 +11,10 @@ jobs:
     steps:
     - name: Set PowerShell execution policy
       run: Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-      shell: pwsh
+      shell: powershell
     - name: Run PowerShell Inline
       run: Write-Output "Running an inline PowerShell command on self-hosted runner"
-      shell: pwsh
+      shell: powershell
 
 #      # Run an external PowerShell script
 #      - name: Run External PowerShell Script
