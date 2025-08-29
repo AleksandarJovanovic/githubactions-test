@@ -3,7 +3,7 @@ name: test_1 Workflow
 on:
   workflow_dispatch:
   schedule:
-    - cron: '58 11 * * *'
+    - cron: '58 12,13 * * *'
 
 jobs:
   print-message:
@@ -13,3 +13,26 @@ jobs:
         run: echo "Hello from test_1 workflow!"
       - name: Print execution time (UTC)
         run: date -u
+
+      # Compensate with a 20-min grace period for the possible delay of a potentially busy runner's delay in picking up this workflow for execution
+      - name: Verify local time
+        run: |
+          $time = "${{ inputs.time || env.TIME }}"
+          $hour, $minute = $time -split ":"
+          $validTimes = @()
+          for ($i = 0; $i -le 20; $i++) {
+            $validMinute = ([int]$minute + $i) % 60
+            $validHour = [int]$hour + (([int]$minute + $i) / 60 -eq 1 ? 1 : 0)
+            $validTimes += "{0:D2}:{1:D2}" -f [int]$validHour, [int]$validMinute
+          }
+          echo "Valid times: $($validTimes -join ', ')"
+          $currentTime = (Get-Date).ToString("HH:mm")
+          if ($validTimes -contains $currentTime) {
+            echo "Workflow continues its execution as a valid time is near $time (actual local time: $currentTime)"
+          } else {
+            echo "Current time is $currentTime. Stopping workflow."
+            exit 0
+          }
+        
+      - name: Execution step
+        run: echo "Final step executed!"
