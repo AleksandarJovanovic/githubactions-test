@@ -3,7 +3,7 @@ name: test_1 Workflow
 on:
   workflow_dispatch:
   schedule:
-    - cron: '46 11 * * *'
+    - cron: '58 11 * * *'
 
 jobs:
   print-message:
