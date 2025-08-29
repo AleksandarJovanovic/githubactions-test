@@ -1,11 +1,13 @@
-name: Manual Dispatch Workflow
+name: test_1 Workflow
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '46 11 * * *'
 
 jobs:
   print-message:
     runs-on: ubuntu-latest
     steps:
       - name: Print message
-        run: echo "Hello from workflow_dispatch!"
+        run: echo "Hello from test_1 workflow!"
