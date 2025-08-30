@@ -2,37 +2,47 @@ name: test_1 Workflow
 
 on:
   workflow_dispatch:
+    inputs:
+      time:
+        description: "Target start time in HH:mm (24h UTC)"
+        required: false
   schedule:
-    - cron: '58 12,13 * * *'
+    - cron: '30 19,20 * * *'
 
 jobs:
   print-message:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Print message
         run: echo "Hello from test_1 workflow!"
+
       - name: Print execution time (UTC)
         run: date -u
 
-      # Compensate with a 20-min grace period for the possible delay of a potentially busy runner's delay in picking up this workflow for execution
+      # Compensate with a 20-min grace period for runner pickup delay
       - name: Verify local time
+        shell: pwsh
         run: |
-          $time = "${{ inputs.time || env.TIME }}"
+          $time = "${{ github.event.inputs.time || env.TIME || '12:58' }}"
+          Write-Output "Configured target time: $time (UTC)"
+
           $hour, $minute = $time -split ":"
           $validTimes = @()
           for ($i = 0; $i -le 20; $i++) {
             $validMinute = ([int]$minute + $i) % 60
-            $validHour = [int]$hour + (([int]$minute + $i) / 60 -eq 1 ? 1 : 0)
-            $validTimes += "{0:D2}:{1:D2}" -f [int]$validHour, [int]$validMinute
+            $validHour = ([int]$hour + [math]::Floor(([int]$minute + $i) / 60)) % 24
+            $validTimes += "{0:D2}:{1:D2}" -f $validHour, $validMinute
           }
-          echo "Valid times: $($validTimes -join ', ')"
-          $currentTime = (Get-Date).ToString("HH:mm")
+
+          Write-Output "Valid times: $($validTimes -join ', ')"
+
+          $currentTime = (Get-Date).ToUniversalTime().ToString("HH:mm")
           if ($validTimes -contains $currentTime) {
-            echo "Workflow continues its execution as a valid time is near $time (actual local time: $currentTime)"
+            Write-Output "✅ Workflow continues (actual UTC time: $currentTime)"
           } else {
-            echo "Current time is $currentTime. Stopping workflow."
+            Write-Output "⛔ Current UTC time is $currentTime. Stopping workflow."
             exit 0
           }
-        
+
       - name: Execution step
         run: echo "Final step executed!"
