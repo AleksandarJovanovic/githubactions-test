@@ -7,7 +7,7 @@ on:
         description: "Target start time in HH:mm (24h UTC)"
         required: false
   schedule:
-    - cron: '30 19,20 * * *'
+    - cron: '45 19,20 * * *'
 
 jobs:
   print-message:
@@ -31,11 +31,11 @@ jobs:
           for ($i = 0; $i -le 20; $i++) {
             $validMinute = ([int]$minute + $i) % 60
             $validHour = ([int]$hour + [math]::Floor(([int]$minute + $i) / 60)) % 24
-            $validTimes += "{0:D2}:{1:D2}" -f $validHour, $validMinute
+            $validTimes += "{0:D2}:{1:D2}" -f ([int]$validHour), ([int]$validMinute)
           }
-
+          
           Write-Output "Valid times: $($validTimes -join ', ')"
-
+          
           $currentTime = (Get-Date).ToUniversalTime().ToString("HH:mm")
           if ($validTimes -contains $currentTime) {
             Write-Output "✅ Workflow continues (actual UTC time: $currentTime)"
