@@ -7,7 +7,7 @@ on:
         description: "Target start time in HH:mm (24h UTC)"
         required: false
   schedule:
-    - cron: '45 19,20 * * *'
+    - cron: '00 20,21 * * *'
 
 jobs:
   print-message:
@@ -19,28 +19,29 @@ jobs:
       - name: Print execution time (UTC)
         run: date -u
 
-      # Compensate with a 20-min grace period for runner pickup delay
-      - name: Verify local time
-        shell: pwsh
+      - name: Set default values for scheduled runs
+        if: github.event_name == 'schedule'
         run: |
-          $time = "${{ github.event.inputs.time || env.TIME || '12:58' }}"
-          Write-Output "Configured target time: $time (UTC)"
+          # echo "RUNNER=PFA-PROD-DEPLOY" >> $env:GITHUB_ENV
+          echo "TIME=22:00" >> $env:GITHUB_ENV
 
+      # Compensate with a 20-min grace period for the possible delay of a potentially busy runner's delay in picking up this workflow for execution
+      - name: Verify local time
+        run: |
+          $time = "${{ inputs.time || env.TIME }}"
           $hour, $minute = $time -split ":"
           $validTimes = @()
           for ($i = 0; $i -le 20; $i++) {
             $validMinute = ([int]$minute + $i) % 60
-            $validHour = ([int]$hour + [math]::Floor(([int]$minute + $i) / 60)) % 24
-            $validTimes += "{0:D2}:{1:D2}" -f ([int]$validHour), ([int]$validMinute)
+            $validHour = [int]$hour + (([int]$minute + $i) / 60 -eq 1 ? 1 : 0)
+            $validTimes += "{0:D2}:{1:D2}" -f [int]$validHour, [int]$validMinute
           }
-          
-          Write-Output "Valid times: $($validTimes -join ', ')"
-          
-          $currentTime = (Get-Date).ToUniversalTime().ToString("HH:mm")
+          echo "Valid times: $($validTimes -join ', ')"
+          $currentTime = (Get-Date).ToString("HH:mm")
           if ($validTimes -contains $currentTime) {
-            Write-Output "✅ Workflow continues (actual UTC time: $currentTime)"
+            echo "Workflow continues its execution as a valid time is near $time (actual local time: $currentTime)"
           } else {
-            Write-Output "⛔ Current UTC time is $currentTime. Stopping workflow."
+            echo "Current time is $currentTime. Stopping workflow."
             exit 0
           }
 
