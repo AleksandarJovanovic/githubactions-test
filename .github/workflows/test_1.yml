@@ -7,7 +7,7 @@ on:
         description: "Target start time in HH:mm (24h UTC)"
         required: false
   schedule:
-    - cron: '45 07,08 * * *'  # UTC times for triggering the workflow during summer and winter time
+    - cron: '00 20,21 * * *'  # UTC times for triggering the workflow during summer and winter time
 
 jobs:
   print-message:
@@ -24,7 +24,7 @@ jobs:
       - name: Set default values for scheduled runs
         if: github.event_name == 'schedule'
         run: |
-          echo "LOCAL_TIME=09:45" >> $env:GITHUB_ENV
+          echo "LOCAL_TIME=22:00" >> $env:GITHUB_ENV
 
       # Compensate with a 20-min grace period for the possible delay of a potentially busy runner's delay in picking up this workflow for execution
       - name: Verify Stockholm time
