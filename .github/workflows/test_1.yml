@@ -43,10 +43,12 @@ jobs:
           $currentTime = ([System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), 'Europe/Stockholm')).ToString("HH:mm")
           if ($validTimes -contains $currentTime) {
             echo "Workflow continues its execution as a valid time is near $time (actual Stockholm time: $currentTime)"
+            echo "STOCKHOLM_TIME_OK=true" >> $env:GITHUB_ENV
           } else {
             echo "Current time in Stockholm is $currentTime. Stopping workflow."
-            exit 1
+            echo "STOCKHOLM_TIME_OK=false" >> $env:GITHUB_ENV
           }
 
       - name: Execution step
+        if: env.STOCKHOLM_TIME_OK == 'true'
         run: echo "Final step executed!"
