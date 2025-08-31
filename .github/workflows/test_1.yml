@@ -7,7 +7,7 @@ on:
         description: "Target start time in HH:mm (24h UTC)"
         required: false
   schedule:
-    - cron: '30 20,21 * * *'  # UTC times for triggering the workflow during summer and winter time
+    - cron: '35 05,06 * * *'  # UTC times for triggering the workflow during summer and winter time
 
 jobs:
   print-message:
@@ -16,16 +16,18 @@ jobs:
       - name: Print message
         run: echo "Hello from test_1 workflow!"
 
-      - name: Print execution time (UTC)
-        run: date -u
+      - name: Print execution time (Stockholm)
+        run: |
+          $stockholmTime = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), 'Europe/Stockholm')
+          Write-Output "Current time in Stockholm: $($stockholmTime.ToString('HH:mm'))"
 
       - name: Set default values for scheduled runs
         if: github.event_name == 'schedule'
         run: |
-          echo "LOCAL_TIME=22:30" >> $env:GITHUB_ENV
+          echo "LOCAL_TIME=07:35" >> $env:GITHUB_ENV
 
       # Compensate with a 20-min grace period for the possible delay of a potentially busy runner's delay in picking up this workflow for execution
-      - name: Verify local time
+      - name: Verify Stockholm time
         run: |
           $time = "${{ inputs.time || env.LOCAL_TIME }}"
           $hour, $minute = $time -split ":"
@@ -36,11 +38,12 @@ jobs:
             $validTimes += "{0:D2}:{1:D2}" -f [int]$validHour, [int]$validMinute
           }
           echo "Valid times: $($validTimes -join ', ')"
-          $currentTime = (Get-Date).ToString("HH:mm")
+          # Get current time in Stockholm
+          $currentTime = ([System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), 'Europe/Stockholm')).ToString("HH:mm")
           if ($validTimes -contains $currentTime) {
-            echo "Workflow continues its execution as a valid time is near $time (actual local time: $currentTime)"
+            echo "Workflow continues its execution as a valid time is near $time (actual Stockholm time: $currentTime)"
           } else {
-            echo "Current time is $currentTime. Stopping workflow."
+            echo "Current time in Stockholm is $currentTime. Stopping workflow."
             exit 0
           }
 
