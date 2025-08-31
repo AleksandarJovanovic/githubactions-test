@@ -28,6 +28,7 @@ jobs:
 
       # Compensate with a 20-min grace period for the possible delay of a potentially busy runner's delay in picking up this workflow for execution
       - name: Verify Stockholm time
+        id: verify_stockholm_time
         run: |
           $time = "${{ inputs.time || env.LOCAL_TIME }}"
           $hour, $minute = $time -split ":"
@@ -44,9 +45,8 @@ jobs:
             echo "Workflow continues its execution as a valid time is near $time (actual Stockholm time: $currentTime)"
           } else {
             echo "Current time in Stockholm is $currentTime. Stopping workflow."
-            exit 0
+            exit 1
           }
 
       - name: Execution step
-        if: steps.Verify_Stockholm_time.outcome != 'success'
         run: echo "Final step executed!"
